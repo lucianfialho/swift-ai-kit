@@ -81,36 +81,18 @@ public class LLMEngine: ObservableObject {
         print("[LLMEngine] Downloading \(model.fileName) from \(model.downloadURL)…")
         downloadProgress = 0
 
-        let delegate = ProgressDelegate { [weak self] progress in
-            Task { @MainActor in self?.downloadProgress = progress }
-        }
-        let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
-        let (tempURL, response) = try await session.download(from: model.downloadURL)
+        var request = URLRequest(url: model.downloadURL)
+        request.setValue("Mozilla/5.0", forHTTPHeaderField: "User-Agent")
+
+        let (tempURL, response) = try await URLSession.shared.download(for: request)
 
         if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+            print("[LLMEngine] HTTP \(http.statusCode)")
             throw URLError(.badServerResponse)
         }
 
         try FileManager.default.moveItem(at: tempURL, to: modelPath)
+        downloadProgress = 1.0
         print("[LLMEngine] Download complete: \(model.fileName)")
     }
-}
-
-// MARK: - URLSession Download Progress
-
-private final class ProgressDelegate: NSObject, URLSessionDownloadDelegate {
-    let onProgress: @Sendable (Double) -> Void
-
-    init(onProgress: @escaping @Sendable (Double) -> Void) {
-        self.onProgress = onProgress
-    }
-
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
-                    didWriteData _: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        guard totalBytesExpectedToWrite > 0 else { return }
-        onProgress(Double(totalBytesWritten) / Double(totalBytesExpectedToWrite))
-    }
-
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
-                    didFinishDownloadingTo _: URL) {}
 }
