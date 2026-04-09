@@ -1,18 +1,35 @@
 # ANEKit
 
-A template for building macOS menu bar apps powered by **Apple Intelligence** — no API key, no model download, runs entirely on-device via the Apple Neural Engine.
+A Swift framework and Xcode template for building macOS apps powered by **Apple Intelligence** — no API key, no model download, runs entirely on-device via the Apple Neural Engine.
 
-> Think of it as Next.js for macOS AI apps: handles all the boilerplate, you ship the idea.
-
-Inspired by [Ghost Pepper](https://github.com/matthartman/ghost-pepper).
+> Define your actions in one file. ANEKit handles everything else.
 
 ---
 
-## What you get
+## How it works
+
+ANEKit uses Apple's public [`FoundationModels`](https://developer.apple.com/documentation/foundationmodels) framework to access the on-device language model that powers Apple Intelligence. There is no internet request, no API key, and no model to download — the model ships with macOS 26.
+
+You define a list of **Actions** (a name, a prompt, and an SF Symbol). ANEKit handles capture (clipboard or hotkey), inference, and presenting the result.
+
+## vs. Ghost Pepper
+
+[Ghost Pepper](https://github.com/matthartman/ghost-pepper) is a great reference, but it's an **app**, not a framework — and it calls a **private** Apple API (`WritingToolsSession`) that can break at any macOS update. ANEKit is a template you own, built on Apple's **public, documented** `FoundationModels` API.
+
+| | Ghost Pepper | ANEKit |
+|---|---|---|
+| Type | App | Framework / template |
+| API | Private (`WritingToolsSession`) | Public (`FoundationModels`) |
+| Actions | Fixed (Apple Writing Tools) | You define any prompt |
+| Extensible | No | Yes — edit `AppConfig.swift` |
+| API stability | May break on macOS updates | Documented, stable |
+
+## What the reference implementation includes
+
+The included `MyApp` target is a menu bar app — but that's just one way to use ANEKit. The framework itself is UI-agnostic.
 
 - Menu bar icon with status states
-- Apple Intelligence inference via the [`FoundationModels`](https://developer.apple.com/documentation/foundationmodels) framework
-- Global hotkey or clipboard trigger
+- Global hotkey (`Cmd+Shift+V`) or clipboard trigger
 - Floating popup near cursor with action picker
 - Result view with one-click copy to clipboard
 - Settings window with full action CRUD
@@ -73,7 +90,7 @@ struct AppConfig: ANEAppConfig {
 ane-kit/
   ANEKit/                     framework — don't edit
     Core/
-      LLMEngine.swift         Apple Intelligence session management
+      LLMEngine.swift         FoundationModels session management
       MenuBarManager.swift    status bar icon and menu
       HotkeyManager.swift     global hotkey listener
       ClipboardMonitor.swift  clipboard polling
@@ -86,17 +103,11 @@ ane-kit/
       Action.swift            Action model + {input} substitution
       Trigger.swift           trigger enum
       ANEAppConfig.swift      protocol your AppConfig must conform to
-  MyApp/                      your app — edit here
+  MyApp/                      reference implementation — edit here
     AppConfig.swift           ← the only file you need to touch
     MyAppApp.swift            @main entry point + AppDelegate
   ANEKitTests/                unit tests
 ```
-
-## How it works
-
-ANEKit uses Apple's [`FoundationModels`](https://developer.apple.com/documentation/foundationmodels) framework, which provides access to the on-device language model powering Apple Intelligence. There is no internet request, no API key, and no model to download — the model ships with macOS 26.
-
-Each action creates a fresh `LanguageModelSession` with a concise system prompt, runs inference, and returns the result as plain text.
 
 ## License
 
