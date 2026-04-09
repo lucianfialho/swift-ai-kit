@@ -8,9 +8,7 @@ A Swift framework and Xcode template for building macOS apps powered by **Apple 
 
 ## How it works
 
-ANEKit uses Apple's public [`FoundationModels`](https://developer.apple.com/documentation/foundationmodels) framework to access the on-device language model that powers Apple Intelligence. There is no internet request, no API key, and no model to download — the model ships with macOS 26.
-
-You define a list of **Actions** (a name, a prompt, and an SF Symbol). ANEKit handles capture (clipboard or hotkey), inference, and presenting the result.
+[`FoundationModels`](https://developer.apple.com/documentation/foundationmodels) is Apple's official framework (WWDC 2025) for on-device LLM inference — no download, no API key, runs on the ANE automatically. ANEKit wraps it so you only define **Actions** (name, prompt, SF Symbol icon); the framework handles capture, inference, and result presentation.
 
 ## vs. Ghost Pepper
 
