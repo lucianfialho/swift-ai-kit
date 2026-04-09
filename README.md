@@ -10,17 +10,6 @@ A Swift framework and Xcode template for building macOS apps powered by **Apple 
 
 [`FoundationModels`](https://developer.apple.com/documentation/foundationmodels) is Apple's official framework (WWDC 2025) for on-device LLM inference — no download, no API key, runs on the ANE automatically. ANEKit wraps it so you only define **Actions** (name, prompt, SF Symbol icon); the framework handles capture, inference, and result presentation.
 
-## vs. Ghost Pepper
-
-[Ghost Pepper](https://github.com/matthartman/ghost-pepper) is a great reference, but it's an **app**, not a framework — and it calls a **private** Apple API (`WritingToolsSession`) that can break at any macOS update. ANEKit is a template you own, built on Apple's **public, documented** `FoundationModels` API.
-
-| | Ghost Pepper | ANEKit |
-|---|---|---|
-| Type | App | Framework / template |
-| API | Private (`WritingToolsSession`) | Public (`FoundationModels`) |
-| Actions | Fixed (Apple Writing Tools) | You define any prompt |
-| Extensible | No | Yes — edit `AppConfig.swift` |
-| API stability | May break on macOS updates | Documented, stable |
 
 ## What the reference implementation includes
 
