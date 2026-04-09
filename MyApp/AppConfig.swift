@@ -5,7 +5,7 @@ import Foundation
 //  Rename MyApp → your app name everywhere, then configure below.
 // ============================================================
 
-struct AppConfig: ANEAppConfig {
+struct AppConfig: SwiftAIAppConfig {
     static let appName = "My ANE App"
     static let trigger = Trigger.hotkey   // popup abre com Cmd+Shift+V
 

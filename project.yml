@@ -15,7 +15,7 @@ targets:
     type: application
     platform: macOS
     sources:
-      - ANEKit
+      - SwiftAIKit
       - MyApp
     settings:
       base:
@@ -31,11 +31,11 @@ targets:
     dependencies:
       - package: Sparkle
 
-  ANEKitTests:
+  SwiftAIKitTests:
     type: bundle.unit-test
     platform: macOS
     sources:
-      - ANEKitTests
+      - SwiftAIKitTests
     dependencies:
       - target: MyApp
     settings:

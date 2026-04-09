@@ -1,19 +1,19 @@
-# ANEKit
+# SwiftAIKit
 
 A Swift framework and Xcode template for building macOS apps powered by **Apple Intelligence** — no API key, no model download, runs entirely on-device via the Apple Neural Engine.
 
-> Define your actions in one file. ANEKit handles everything else.
+> Define your actions in one file. SwiftAIKit handles everything else.
 
 ---
 
 ## How it works
 
-[`FoundationModels`](https://developer.apple.com/documentation/foundationmodels) is Apple's official framework (WWDC 2025) for on-device LLM inference — no download, no API key, runs on the ANE automatically. ANEKit wraps it so you only define **Actions** (name, prompt, SF Symbol icon); the framework handles capture, inference, and result presentation.
+[`FoundationModels`](https://developer.apple.com/documentation/foundationmodels) is Apple's official framework (WWDC 2025) for on-device LLM inference — no download, no API key, runs on the ANE automatically. SwiftAIKit wraps it so you only define **Actions** (name, prompt, SF Symbol icon); the framework handles capture, inference, and result presentation.
 
 
 ## What the reference implementation includes
 
-The included `MyApp` target is a menu bar app — but that's just one way to use ANEKit. The framework itself is UI-agnostic.
+The included `MyApp` target is a menu bar app — but that's just one way to use SwiftAIKit. The framework itself is UI-agnostic.
 
 - Menu bar icon with status states
 - Global hotkey (`Cmd+Shift+V`) or clipboard trigger
@@ -49,7 +49,7 @@ open MyApp.xcodeproj
 ## AppConfig.swift
 
 ```swift
-struct AppConfig: ANEAppConfig {
+struct AppConfig: SwiftAIAppConfig {
     static let appName = "My App"
     static let trigger = Trigger.hotkey  // .clipboard | .hotkey
 
@@ -74,8 +74,8 @@ struct AppConfig: ANEAppConfig {
 ## Project structure
 
 ```
-ane-kit/
-  ANEKit/                     framework — don't edit
+swift-ai-kit/
+  SwiftAIKit/                     framework — don't edit
     Core/
       LLMEngine.swift         FoundationModels session management
       MenuBarManager.swift    status bar icon and menu
@@ -89,11 +89,11 @@ ane-kit/
     Models/
       Action.swift            Action model + {input} substitution
       Trigger.swift           trigger enum
-      ANEAppConfig.swift      protocol your AppConfig must conform to
+      SwiftAIAppConfig.swift      protocol your AppConfig must conform to
   MyApp/                      reference implementation — edit here
     AppConfig.swift           ← the only file you need to touch
     MyAppApp.swift            @main entry point + AppDelegate
-  ANEKitTests/                unit tests
+  SwiftAIKitTests/                unit tests
 ```
 
 ## License
