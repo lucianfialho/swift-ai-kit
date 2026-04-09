@@ -26,11 +26,4 @@ final class ActionTests: XCTestCase {
         let action = Action("Test", prompt: "p", icon: "i", id: id)
         XCTAssertEqual(action.id, id)
     }
-
-    func test_llm_model_display_names_are_non_empty() {
-        for model in LLMModel.allCases {
-            XCTAssertFalse(model.displayName.isEmpty)
-            XCTAssertFalse(model.approximateSize.isEmpty)
-        }
-    }
 }

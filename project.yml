@@ -2,13 +2,10 @@ name: MyApp
 options:
   bundleIdPrefix: com.yourname
   deploymentTarget:
-    macOS: "14.0"
+    macOS: "26.0"
   xcodeVersion: "16.0"
 
 packages:
-  LLM.swift:
-    url: https://github.com/obra/LLM.swift.git
-    branch: main
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle.git
     from: "2.6.0"
@@ -30,10 +27,8 @@ targets:
         ENABLE_HARDENED_RUNTIME: NO
         CODE_SIGN_IDENTITY: "Apple Development"
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: 2C8PFQV586
+        DEVELOPMENT_TEAM: ""  # Set to your Apple Developer Team ID
     dependencies:
-      - package: LLM.swift
-        product: LLM
       - package: Sparkle
 
   ANEKitTests:

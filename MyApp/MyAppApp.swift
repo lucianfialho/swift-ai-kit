@@ -14,10 +14,11 @@ struct MyAppApp: App {
 class AppDelegate: NSObject, NSApplicationDelegate {
     private let menuBar = MenuBarManager()
     private let clipboard = ClipboardMonitor()
-    private let llmEngine = LLMEngine(model: AppConfig.defaultModel)
+    private let llmEngine = LLMEngine()
     private var hotkey: HotkeyManager?
     private let panel = PopupPanel()
     private var settingsWindow: NSWindow?
+    private var isRunningAction = false
 
     @AppStorage("customActions") private var actionsData: Data = {
         (try? JSONEncoder().encode(AppConfig.actions)) ?? Data()
@@ -30,11 +31,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
 
-        // Request Accessibility permission (required for global hotkey)
-        let trusted = AXIsProcessTrustedWithOptions(
+        AXIsProcessTrustedWithOptions(
             [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
         )
-        print("[AppDelegate] Accessibility trusted: \(trusted)")
 
         menuBar.setup(appName: AppConfig.appName)
         menuBar.onSettingsRequested = { [weak self] in self?.openSettings() }
@@ -52,23 +51,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             hotkey?.start()
         case .selection:
+            // Falls back to hotkey behaviour — reads whatever is already on the clipboard.
+            // Reliable cross-app text selection requires Accessibility scripting beyond
+            // the scope of this template.
             let combo = AppConfig.hotkeyCombo
             hotkey = HotkeyManager(combo: combo) { [weak self] in
-                NSApp.sendAction(#selector(NSText.copy(_:)), to: nil, from: nil)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    if let text = NSPasteboard.general.string(forType: .string), !text.isEmpty {
-                        self?.showPicker(for: text)
-                    }
+                if let text = NSPasteboard.general.string(forType: .string), !text.isEmpty {
+                    self?.showPicker(for: text)
                 }
             }
             hotkey?.start()
         }
 
         Task {
+            menuBar.setLoading(message: "Checking Apple Intelligence…")
             do {
                 try await llmEngine.load()
+                menuBar.setIdle()
             } catch {
-                print("[AppDelegate] LLM load error: \(error.localizedDescription)")
+                menuBar.setError(message: error.localizedDescription)
             }
         }
     }
@@ -86,6 +87,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func runAction(_ action: Action, on text: String) {
+        guard !isRunningAction else { return }
+        isRunningAction = true
         let prompt = action.apply(to: text)
 
         panel.setContent(ResultView(
@@ -96,25 +99,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         ))
 
         Task { @MainActor in
+            defer { self.isRunningAction = false }
             do {
                 let result = try await llmEngine.run(prompt: prompt)
                 panel.setContent(ResultView(
                     state: .result(result),
                     actionName: action.name,
-                    onCopy: { [weak self] output in
-                        guard let self else { return }
-                        // Pause monitor to prevent re-triggering on our own output
-                        if AppConfig.trigger == .clipboard { self.clipboard.stop() }
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(output, forType: .string)
-                        self.panel.dismiss()
-                        // Resume after the clipboard change is past the polling window
-                        if AppConfig.trigger == .clipboard {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                self.clipboard.start()
-                            }
-                        }
-                    },
+                    onCopy: { [weak self] in self?.copyToClipboard($0) },
                     onBack: { [weak self] in self?.showPicker(for: text) }
                 ))
             } catch {
@@ -128,7 +119,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    private func copyToClipboard(_ text: String) {
+        if AppConfig.trigger == .clipboard { clipboard.stop() }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        panel.dismiss()
+        if AppConfig.trigger == .clipboard {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.clipboard.start()
+            }
+        }
+    }
+
     private func openSettings() {
+        if let existing = settingsWindow, existing.isVisible {
+            existing.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
         let settingsView = SettingsView(initialActions: currentActions) { [weak self] updated in
             self?.actionsData = (try? JSONEncoder().encode(updated)) ?? Data()
         }

@@ -27,7 +27,8 @@ public class PopupPanel: NSPanel {
     /// Shows panel positioned near cursor, clamped to screen bounds.
     public func showNearCursor() {
         let cursor = NSEvent.mouseLocation
-        guard let screen = NSScreen.main else { return }
+        let screen = NSScreen.screens.first(where: { $0.frame.contains(cursor) }) ?? NSScreen.main
+        guard let screen else { return }
         let screenFrame = screen.visibleFrame
         var origin = NSPoint(
             x: cursor.x + 8,

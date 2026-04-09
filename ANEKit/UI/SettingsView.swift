@@ -1,8 +1,7 @@
 import SwiftUI
 
-/// Settings window: manage custom actions (CRUD) and choose LLM model.
+/// Settings window: manage custom actions (CRUD).
 public struct SettingsView: View {
-    @AppStorage("selectedModel") private var selectedModelRaw = LLMModel.qwen_0_8b.rawValue
     @State private var actions: [Action]
     @State private var editingAction: Action?
     @State private var showingAddSheet = false
@@ -14,25 +13,9 @@ public struct SettingsView: View {
         self.onActionsChanged = onActionsChanged
     }
 
-    private var selectedModel: LLMModel {
-        LLMModel(rawValue: selectedModelRaw) ?? .qwen_0_8b
-    }
-
     public var body: some View {
-        TabView {
-            actionsTab
-                .tabItem { Label("Actions", systemImage: "list.bullet") }
-
-            modelsTab
-                .tabItem { Label("Model", systemImage: "cpu") }
-        }
-        .frame(width: 480, height: 360)
-        .padding()
-    }
-
-    private var actionsTab: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Custom Actions")
+            Text("Actions")
                 .font(.headline)
 
             List {
@@ -59,11 +42,16 @@ public struct SettingsView: View {
             .listStyle(.bordered)
 
             HStack {
+                Label("Powered by Apple Intelligence", systemImage: "sparkles")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                 Spacer()
                 Button("Add Action") { showingAddSheet = true }
                     .buttonStyle(.borderedProminent)
             }
         }
+        .padding()
+        .frame(width: 480, height: 360)
         .sheet(isPresented: $showingAddSheet) {
             ActionEditSheet(action: nil) { newAction in
                 actions.append(newAction)
@@ -77,32 +65,6 @@ public struct SettingsView: View {
                     onActionsChanged(actions)
                 }
             }
-        }
-    }
-
-    private var modelsTab: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("LLM Model")
-                .font(.headline)
-
-            ForEach(LLMModel.allCases, id: \.self) { model in
-                HStack {
-                    Image(systemName: selectedModel == model ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(selectedModel == model ? .accentColor : .secondary)
-                    VStack(alignment: .leading) {
-                        Text(model.displayName)
-                        Text("Downloads automatically on first use").font(.caption).foregroundColor(.secondary)
-                    }
-                    Spacer()
-                }
-                .contentShape(Rectangle())
-                .onTapGesture { selectedModelRaw = model.rawValue }
-            }
-
-            Spacer()
-            Text("Models are cached in ~/Library/Caches after download.")
-                .font(.caption)
-                .foregroundColor(.secondary)
         }
     }
 
@@ -157,7 +119,7 @@ private struct ActionEditSheet: View {
                     .font(.system(.body, design: .monospaced))
                     .frame(height: 80)
                     .border(Color(NSColor.separatorColor))
-                Text("Use {input} where the clipboard text should be inserted.")
+                Text("Use {input} where the selected text should be inserted.")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
