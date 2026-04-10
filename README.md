@@ -1,8 +1,20 @@
 # SwiftAIKit
 
-A Swift framework and Xcode template for building macOS apps powered by **Apple Intelligence** — no API key, no model download, runs entirely on-device via the Apple Neural Engine.
+> Apple Intelligence in your macOS app. No API key. No model download. Just actions.
 
-> Define your actions in one file. SwiftAIKit handles everything else.
+Adding AI to a macOS app used to mean picking a provider, managing API keys,
+handling network errors, and hoping the model is fast enough. SwiftAIKit cuts
+all of that — it runs entirely on-device via the Apple Neural Engine,
+and your entire integration is one file:
+
+```swift
+static let actions: [Action] = [
+    Action("Fix Grammar", prompt: "Fix grammar. Return only corrected text:\n\n{input}", icon: "checkmark.seal"),
+    Action("Summarize",   prompt: "Summarize in 2 bullets:\n\n{input}",                 icon: "text.quote"),
+]
+```
+
+That's it. SwiftAIKit handles capture, inference, and result presentation.
 
 ---
 
