@@ -79,8 +79,7 @@ struct AppConfig: SwiftAIAppConfig {
 ## Project structure
 
 ```
-swift-ai-kit/
-  SwiftAIKit/                     framework — don't edit
+SwiftAIKit/                     framework — don't edit
     Core/
       LLMEngine.swift         FoundationModels session management
       MenuBarManager.swift    status bar icon and menu
@@ -95,10 +94,10 @@ swift-ai-kit/
       Action.swift            Action model + {input} substitution
       Trigger.swift           trigger enum
       SwiftAIAppConfig.swift      protocol your AppConfig must conform to
-  MyApp/                      reference implementation — edit here
+MyApp/                      reference implementation — edit here
     AppConfig.swift           ← the only file you need to touch
     MyAppApp.swift            @main entry point + AppDelegate
-  SwiftAIKitTests/                unit tests
+SwiftAIKitTests/            unit tests
 ```
 
 ## Using SwiftAIKit in an existing app
