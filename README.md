@@ -51,6 +51,8 @@ xcodegen generate && open MyApp.xcodeproj
 
 ## AppConfig.swift
 
+The only file you edit. Define your app name, trigger mode, and actions:
+
 ```swift
 struct AppConfig: SwiftAIAppConfig {
     static let appName = "My App"
