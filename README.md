@@ -41,16 +41,13 @@ That's it. SwiftAIKit handles capture, inference, and result presentation.
 git clone https://github.com/your-username/your-app-name
 cd your-app-name
 
-# 2. Generate the Xcode project
-xcodegen generate
-
-# 3. Open in Xcode
-open MyApp.xcodeproj
+# 2. Generate and open the Xcode project
+xcodegen generate && open MyApp.xcodeproj
 ```
 
-4. Set your **Team** in Xcode → Signing & Capabilities (or set `DEVELOPMENT_TEAM` in `project.yml`)
-5. Edit **`MyApp/AppConfig.swift`** — the only file you need to touch
-6. `Cmd+R` to run
+3. Set your **Team** in Xcode → Signing & Capabilities (or set `DEVELOPMENT_TEAM` in `project.yml`)
+4. Edit **`MyApp/AppConfig.swift`** — the only file you need to touch
+5. `Cmd+R` to run
 
 ## AppConfig.swift
 
